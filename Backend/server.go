@@ -57,5 +57,10 @@ func main() {
 
 	})
 
+	r.POST("/verify", func(c *gin.Context) {
+		handlers.Verify(c)
+
+	})
+
 	r.Run(":8080")
 }

@@ -1,5 +1,3 @@
-// handlers/authenticate.go
-
 package handlers
 
 import (

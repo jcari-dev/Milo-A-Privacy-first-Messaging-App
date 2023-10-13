@@ -1,5 +1,3 @@
-// handlers/register.go
-
 package handlers
 
 import (
@@ -22,7 +20,7 @@ type User struct {
 }
 
 func RegisterHandler(c *gin.Context, collection *mongo.Collection) {
-	// Your existing register code here
+
 	var user User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})

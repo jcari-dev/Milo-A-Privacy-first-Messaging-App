@@ -54,7 +54,6 @@ func VerifyHandler(c *gin.Context, collection *mongo.Collection) {
 			},
 		}
 
-		// Apply the update to the document
 		_, err = collection.UpdateOne(context.TODO(), filter, update)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
