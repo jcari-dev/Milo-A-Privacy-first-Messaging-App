@@ -61,6 +61,10 @@ func main() {
 		handlers.Verify(c)
 
 	})
+	r.POST("/validate", func(c *gin.Context) {
+		handlers.Validate(c)
+
+	})
 
 	r.Run(":8080")
 }
