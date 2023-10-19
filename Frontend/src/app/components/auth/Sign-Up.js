@@ -9,6 +9,8 @@ import {
     FormErrorMessage,
     Button,
     InputGroup,
+    FormHelperText,
+    VStack,
     InputRightElement,
     Image, Box, Text, Container
 } from '@chakra-ui/react'
@@ -31,85 +33,125 @@ const SignUpForm = () => {
 
     async function validateEmail(value) {
 
-        let error
 
-        const response = await fetch("http://localhost:8080/validate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ field: 'email', value: value }),
-          });
+        if (!value) {
+            return "Must not be blank."
+        } else if (value.length >= 6) {
+            let error
 
-          const data = await response.json();
+            const response = await fetch("http://localhost:8080/validate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ field: 'email', value: value }),
+            });
 
-          if(data.error){
-            error = data.error
-          }
-    
-        return error
+            const data = await response.json();
+
+            if (data.error) {
+                error = data.error
+            }
+
+            return error
+        }
 
     }
- 
+
     async function validateUsername(value) {
-        let error
 
-        const response = await fetch("http://localhost:8080/validate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ field: 'username', value: value }),
-          });
+        if (!value) {
+            return "Must not be blank."
+        } else if (value.length < 3) {
+            return "Minimum 3 characters."
+        } else if (value.length >= 3) {
+            if (/^[0-9]+$/.test(value)) {
+                return "Invalid username, can't be only numeric."
+            } else if (!/^[a-zA-Z0-9._-]+$/.test(value)) {
+                return "Invalid username. Only English characters numbers and (._-)."
+            }
+            let error
 
-          const data = await response.json();
+            const response = await fetch("http://localhost:8080/validate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ field: 'username', value: value }),
+            });
 
-          if(data.error){
-            error = data.error
-          }
-    
-        return error
+            const data = await response.json();
+
+            if (data.error) {
+                error = data.error
+            }
+
+            return error
+        }
+
     }
 
     async function validatePassword1(value) {
         let error
 
-        const response = await fetch("http://localhost:8080/validate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ field: 'password', value: value }),
-          });
+        if (!value) {
+            error = "Must not be blank."
+            return error
+        } else if (value.length < 8) {
+            error = "At least 8 characters in length."
+            return error
+        } else {
 
-          const data = await response.json();
-          console.log(data, 'p1')
-          if(data.error){
-            error = data.error
-          }
-    
+            const response = await fetch("http://localhost:8080/validate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ field: 'password', value: value }),
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                error = data.error
+            }
+        }
+
+
         return error
     }
+
     async function validatePassword2(value) {
         let error
 
-        const response = await fetch("http://localhost:8080/validate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ field: 'password', value: value }),
-          });
+        if (!value) {
+            error = "Must not be blank."
+            return error
+        } else if (value.length < 8) {
+            error = "At least 8 characters in length."
+            return error
+        } else if (value.length >= 8) {
 
-          const data = await response.json();
-          console.log('p2')
-          if(data.error){
-            error = data.error
-          }
-    
+            const response = await fetch("http://localhost:8080/validate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ field: 'password', value: value }),
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                error = data.error
+            }
+        }
+
+
         return error
     }
- 
+
+
 
     const handleSubmit = async (e) => {
         console.log(formData)
@@ -165,16 +207,16 @@ const SignUpForm = () => {
                             </Field>
                             <Field name='username' validate={validateUsername}>
                                 {({ field, form }) => (
-                                    <FormControl isInvalid={form.errors.Username && form.touched.username} isRequired>
+                                    <FormControl isInvalid={form.errors.username && form.touched.username} isRequired>
                                         <FormLabel>Username</FormLabel>
                                         <Input {...field} placeholder='Username' maxWidth="250px" />
-                                        <FormErrorMessage>{form.errors.username}</FormErrorMessage>
+                                        <FormErrorMessage maxWidth={"250px"}>{form.errors.username}</FormErrorMessage>
                                     </FormControl>
                                 )}
                             </Field>
                             <Field name='password1' validate={validatePassword1} >
                                 {({ field, form }) => (
-                                    <FormControl isInvalid={form.errors.password1 - 1 && form.touched.password1 - 1} mb={4} isRequired>
+                                    <FormControl isInvalid={form.errors.password1 && form.touched.password1} mb={4} isRequired>
                                         <FormLabel>Password</FormLabel>
                                         <InputGroup size='md'>
                                             <Input
@@ -184,7 +226,7 @@ const SignUpForm = () => {
                                                 placeholder='Enter password'
                                                 maxWidth="250px"
                                             />
-                                            <InputRightElement width='4.5rem'>
+                                            <InputRightElement width='7rem'>
                                                 <Button h='1.75rem' size='sm' onClick={handleClickP1}>
                                                     {showP1 ? 'Hide' : 'Show'}
                                                 </Button>
@@ -196,7 +238,7 @@ const SignUpForm = () => {
                             </Field>
                             <Field name='password2' validate={validatePassword2} >
                                 {({ field, form }) => (
-                                    <FormControl isInvalid={form.errors.password2 - 2 && form.touched.password2 - 2} mb={4} isRequired>
+                                    <FormControl isInvalid={form.errors.password2 && form.touched.password2} mb={4} isRequired>
                                         <FormLabel>Re-enter Password</FormLabel>
                                         <InputGroup size='md'>
                                             <Input
@@ -206,13 +248,23 @@ const SignUpForm = () => {
                                                 placeholder='Re-enter Password'
                                                 maxWidth="250px"
                                             />
-                                            <InputRightElement width='4.5rem'>
+                                            <InputRightElement width='7rem'>
                                                 <Button h='1.75rem' size='sm' onClick={handleClickP2}>
                                                     {showP2 ? 'Hide' : 'Show'}
                                                 </Button>
                                             </InputRightElement>
                                         </InputGroup>
                                         <FormErrorMessage>{form.errors.password2}</FormErrorMessage>
+                                        <VStack spacing={2} align="start">
+                                            <FormHelperText>
+                                                <ul style={{ margin: 0, paddingInlineStart: '20px' }}>
+                                                    <li>Minimum 8 characters</li>
+                                                    <li>Include 1 lowercase</li>
+                                                    <li>Include 1 uppercase</li>
+                                                    <li>Include 1 special (!@#$%^&amp;*()-_+=&lt;&gt;?)</li>
+                                                </ul>
+                                            </FormHelperText>
+                                        </VStack>
                                     </FormControl>
                                 )}
                             </Field>
