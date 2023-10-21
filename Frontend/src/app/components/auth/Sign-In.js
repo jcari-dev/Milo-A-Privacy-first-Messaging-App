@@ -57,7 +57,7 @@ const SignInForm = () => {
 
         <Box aspectRatio={16 / 9}>
           <Image
-            src="./images/sign-in/bg.png"
+            src="./images/sign-in/bg-sign-in.webp"
             w={["640px", "768px", "896px"]}
             alt="Cool Pic"
             mt={4}

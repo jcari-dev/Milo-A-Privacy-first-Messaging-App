@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import React from 'react';
 import axios from 'axios';
 import {
@@ -15,10 +15,12 @@ import {
     Image, Box, Text, Container
 } from '@chakra-ui/react'
 
-import { Field, Form, Formik } from 'formik';
+import { Field, Form, Formik, useFormikContext } from 'formik';
 
 
 const SignUpForm = () => {
+    const password1Ref = useRef(null);
+    const password2Ref = useRef(null);
     const [formData, setFormData] = useState({ username: '', password1: '', password2: '', email: '' });
 
     const handleChange = (e) => {
@@ -114,6 +116,12 @@ const SignUpForm = () => {
 
             if (data.error) {
                 error = data.error
+            }  else {
+                const password2 = password2Ref.current.value;
+                if (password2 && password2 !== value) {
+                    error = "Passwords do not match."
+                    console.log(password2, value)
+                  }
             }
         }
 
@@ -144,13 +152,18 @@ const SignUpForm = () => {
 
             if (data.error) {
                 error = data.error
+            } else {
+                const password1 = password1Ref.current.value;
+                if (password1 && password1 !== value) {
+                    error = "Passwords do not match."
+                    console.log(password1, value)
+                  }
             }
         }
 
 
         return error
     }
-
 
 
     const handleSubmit = async (e) => {
@@ -165,13 +178,13 @@ const SignUpForm = () => {
     };
     let registrationSuccess = true;
     return registrationSuccess ? (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
             <Card align='center' h="100%">
 
                 <Box aspectRatio={16 / 9}>
                     <Image
-                        src="./images/sign-up/bg.png"
+                        src="./images/sign-up/bg-sign-up.webp"
                         w={["640px", "768px", "896px"]}
                         alt="Cool Pic"
                         mt={4}
@@ -186,12 +199,15 @@ const SignUpForm = () => {
                 <Formik
                     initialValues={{ email: '', username: '', password1: '', password2: '' }}
                     validateOnBlur={true}
-                    validateOnChange={true}
-                    onSubmit={(values, actions) => {
-                        setTimeout(() => {
-                            alert(JSON.stringify(values, null, 2))
-                            actions.setSubmitting(false)
-                        }, 1000)
+                    validateOnChange={false}
+                    onSubmit={async (values, actions) => {
+                        try {
+                            const response = await axios.post('http://localhost:8080/register', values);
+                            console.log('User registered:', response.data);
+                        } catch (error) {
+                            console.error('Registration failed:', error);
+                        }
+                        actions.setSubmitting(false);
                     }}
                 >
                     {(props) => (
@@ -225,6 +241,7 @@ const SignUpForm = () => {
                                                 type={showP1 ? 'text' : 'password'}
                                                 placeholder='Enter password'
                                                 maxWidth="250px"
+                                                ref={password1Ref}
                                             />
                                             <InputRightElement width='7rem'>
                                                 <Button h='1.75rem' size='sm' onClick={handleClickP1}>
@@ -247,6 +264,8 @@ const SignUpForm = () => {
                                                 type={showP2 ? 'text' : 'password'}
                                                 placeholder='Re-enter Password'
                                                 maxWidth="250px"
+                                                ref={password2Ref}
+
                                             />
                                             <InputRightElement width='7rem'>
                                                 <Button h='1.75rem' size='sm' onClick={handleClickP2}>

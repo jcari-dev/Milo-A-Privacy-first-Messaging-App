@@ -18,7 +18,7 @@ type ReCaptchaResponse struct {
 func Verify(c *gin.Context) {
 
 	token := c.PostForm("token")
-	secretKey := ""
+	secretKey := "6Lc5RpkoAAAAAO9l2CttDAwGQ4sL9KghX2Awt7oa"
 
 	response, err := http.PostForm("https://www.google.com/recaptcha/api/siteverify",
 		url.Values{"secret": {secretKey}, "response": {token}})

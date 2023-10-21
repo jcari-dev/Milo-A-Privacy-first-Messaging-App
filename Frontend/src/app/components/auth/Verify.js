@@ -7,7 +7,7 @@ function MyComponent() {
   const [loading, setLoading] = useState(true);
 
   return (
-    <GoogleReCaptchaProvider reCaptchaKey="">
+    <GoogleReCaptchaProvider reCaptchaKey="6Lc5RpkoAAAAAFVlIPRW-5fo1hQmPkwUpVmfxuEa">
       <MyInnerComponent setLoading={setLoading} />
       {loading && (
         <Center>

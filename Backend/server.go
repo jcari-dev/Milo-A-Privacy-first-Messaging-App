@@ -22,10 +22,31 @@ func connectDB() *mongo.Client {
 
 func main() {
 	client := connectDB()
+
+	if client != nil {
+		log.Println("MongoDB Connected")
+	}
 	collection := client.Database("testDB2").Collection("users")
 
-	r := gin.Default()
+	// Index Models
+	indexes := []mongo.IndexModel{
+		{Keys: map[string]interface{}{"_id": 1}},
+		{Keys: map[string]interface{}{"username": 1}},
+		{Keys: map[string]interface{}{"password": 1}},
+		{Keys: map[string]interface{}{"active": 1}},
+		{Keys: map[string]interface{}{"token": 1}},
+		{Keys: map[string]interface{}{"tokents": 1}},
+	}
 
+	// Create indexes
+	_, err := collection.Indexes().CreateMany(context.TODO(), indexes)
+	if err != nil {
+		log.Fatal("Could not create index:", err)
+	}
+
+	r := gin.Default()
+	r.LoadHTMLGlob("templates/*")
+	r.Static("/images", "./images")
 	// Add CORS middleware
 	r.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")

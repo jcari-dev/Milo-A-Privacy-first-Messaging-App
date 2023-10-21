@@ -61,7 +61,8 @@ func VerifyHandler(c *gin.Context, collection *mongo.Collection) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "User verified"})
+		c.HTML(http.StatusOK, "verified.html", nil)
+		return
 
 	}
 }

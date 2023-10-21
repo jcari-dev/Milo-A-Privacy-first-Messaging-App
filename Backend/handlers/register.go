@@ -12,6 +12,7 @@ import (
 )
 
 type User struct {
+	Email    string    `json:"email"`
 	Username string    `json:"username"`
 	Password string    `json:"password"`
 	Active   bool      `json:"active"`
@@ -36,7 +37,6 @@ func RegisterHandler(c *gin.Context, collection *mongo.Collection) {
 	user.Password = string(hashedPassword)
 
 	user.Active = false
-
 	user.Token = uuid.New().String()
 	user.TokenTS = time.Now()
 
