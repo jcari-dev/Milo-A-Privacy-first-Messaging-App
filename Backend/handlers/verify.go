@@ -1,5 +1,3 @@
-// handlers/verify.go
-
 package handlers
 
 import (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import React from 'react';
 import axios from 'axios';
 import {
@@ -8,17 +8,21 @@ import {
   FormLabel,
   FormErrorMessage,
   Button,
-  Link,
-  VStack,
   InputGroup,
+  Link,
+  FormHelperText,
+  VStack,
   InputRightElement,
-  Image, Box
+  Image, Box, Text, Container, Heading, Divider
 } from '@chakra-ui/react'
 
-import { Field, Form, Formik } from 'formik';
+import Head from 'next/head';
+
+import { Field, Form, Formik, useFormikContext } from 'formik';
 
 
-const SignInForm = () => {
+const SignUpForm = () => {
+  const passwordRef = useRef(null);
   const [formData, setFormData] = useState({ username: '', password: '' });
 
   const handleChange = (e) => {
@@ -26,18 +30,71 @@ const SignInForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const [show, setShow] = React.useState(false)
-  const handleClick = () => setShow(!show)
+  const [showP1, setShowP1] = React.useState(false)
 
-  function validateName(value) {
-    let error
+  const handleClickP1 = () => setShowP1(!showP1)
+
+  async function validateUsername(value) {
+
     if (!value) {
-      error = 'Name is required'
-    } else if (value.toLowerCase() !== 'naruto') {
-      error = "Jeez! You're not a fan 😱"
+      return "Must not be blank."
+    } else if (value.length < 3) {
+      return "Minimum 3 characters."
+    } else if (value.length >= 3) {
+      if (/^[0-9]+$/.test(value)) {
+        return "Invalid username, can't be only numeric."
+      } else if (!/^[a-zA-Z0-9._-]+$/.test(value)) {
+        return "Invalid username. Only English characters numbers and (._-)."
+      }
+      let error
+
+      const response = await fetch("http://localhost:8080/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ field: 'username', value: value }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        error = data.error
+      }
+
+      return error
     }
+
+  }
+
+  async function validatePassword(value) {
+    let error
+
+    if (!value) {
+      error = "Must not be blank."
+      return error
+    } else if (value.length < 8) {
+      error = "At least 8 characters in length."
+      return error
+    } else {
+
+      const response = await fetch("http://localhost:8080/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ field: 'password', value: value }),
+      });
+
+      const data = await response.json();
+
+    }
+
+
     return error
   }
+
+
 
   const handleSubmit = async (e) => {
     console.log(formData)
@@ -51,15 +108,20 @@ const SignInForm = () => {
   };
 
   return (
+
+
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <Head>
+        <title>Welcome Back !</title>
+      </Head>
 
       <Card align='center' h="100%">
 
-        <Box aspectRatio={16 / 9}>
+        <Box aspectRatio={8 / 5}>
           <Image
             src="./images/sign-in/bg-sign-in.webp"
-            w={["640px", "768px", "896px"]}
-            alt="Cool Pic"
+            w={["512px", "640px", "768px"]}
+            alt="Sign In"
             mt={4}
             borderRadius="md"
             transition="transform .2s ease-in-out"
@@ -67,70 +129,84 @@ const SignInForm = () => {
           />
         </Box>
 
-
         <Formik
-          initialValues={{ name: 'Sasuke' }}
-          onSubmit={(values, actions) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2))
-              actions.setSubmitting(false)
-            }, 1000)
+          initialValues={{ username: '', password: '' }}
+          onSubmit={async (values, actions) => {
+            try {
+              const response = await axios.post('http://localhost:8080/register', values);
+              console.log('User registered:', response.data);
+            } catch (error) {
+              console.error('Registration failed:', error);
+            }
+            actions.setSubmitting(false);
           }}
         >
           {(props) => (
             <Form>
-              <Field name='Email' validate={validateName}>
+              <Field name='username' validate={validateUsername}>
                 {({ field, form }) => (
-                  <FormControl isInvalid={form.errors.name && form.touched.name}>
-                    <FormLabel mt={4}>Email</FormLabel>
-                    <Input {...field} placeholder='Email' maxWidth="250px" />
-                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                  <FormControl isInvalid={form.errors.username && form.touched.username}>
+                    <FormLabel>Username</FormLabel>
+                    <Input {...field} placeholder='Username' maxWidth="250px" />
+                    <FormErrorMessage maxWidth={"250px"}>{form.errors.username}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>
-              <Field name='password' validate={validateName} >
+              <Field name='password' validate={validatePassword} >
                 {({ field, form }) => (
-                  <FormControl isInvalid={form.errors.name && form.touched.name} mb={4}>
+                  <FormControl isInvalid={form.errors.password && form.touched.password} mb={4}>
                     <FormLabel>Password</FormLabel>
                     <InputGroup size='md'>
                       <Input
                         {...field}
                         pr='4.5rem'
-                        type={show ? 'text' : 'password'}
+                        type={showP1 ? 'text' : 'password'}
                         placeholder='Enter password'
                         maxWidth="250px"
+                        ref={passwordRef}
                       />
-                      <InputRightElement width='4.5rem'>
-                        <Button h='1.75rem' size='sm' onClick={handleClick}>
-                          {show ? 'Hide' : 'Show'}
+                      <InputRightElement width='7rem'>
+                        <Button h='1.75rem' size='sm' onClick={handleClickP1}>
+                          {showP1 ? 'Hide' : 'Show'}
                         </Button>
                       </InputRightElement>
                     </InputGroup>
-                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                    <FormErrorMessage>{form.errors.password}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>
-              <VStack spacing={2} align="start">
-                <Link href="/sign-up" color="cyan.500">Sign Up</Link>
-                <Link href="/forgot-password" color="cyan.500">Forgot Password</Link>
-              </VStack>
               <Button
-                mt={4}
+                mt={2}
                 mb={4}
                 colorScheme='orange'
                 isLoading={props.isSubmitting}
                 type='submit'
               >
-                Login
+                Sign In
               </Button>
 
             </Form>
           )}
-        </Formik>
 
+        </Formik>
+        <Box textAlign="center" p={4}>
+          <Divider borderColor="orange.500" borderWidth={2} my={4} w="full" />
+
+          <Text fontSize="xl" mb={3}>
+            ✨ Introducing... ✨<br />
+            Instant Chat Rooms: No Sign-Up Required, Just Share a Link & Chat Away!
+          </Text>
+          <Button colorScheme="orange">
+            Try Now!
+          </Button>
+        </Box>
       </Card>
-    </div>
-  );
+
+    </div>)
+
+
+
+
 };
 
-export default SignInForm;
+export default SignUpForm;

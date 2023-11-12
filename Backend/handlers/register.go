@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"milo/email"
 	"net/http"
 	"time"
 
@@ -45,6 +46,16 @@ func RegisterHandler(c *gin.Context, collection *mongo.Collection) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not insert user"})
 		return
 	}
+	baseURL := "http://localhost:3000/verify/"
+	userToken := user.Token
 
+	fullURL := baseURL + userToken
+
+	data := email.TemplateData{
+		Name: user.Username,
+		URL:  fullURL,
+	}
+
+	email.SendEmail(user.Email, &data)
 	c.JSON(http.StatusOK, gin.H{"message": "User registered"})
 }

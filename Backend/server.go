@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,6 +22,11 @@ func connectDB() *mongo.Client {
 }
 
 func main() {
+	errEnv := godotenv.Load() // Load .env file
+	if errEnv != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	client := connectDB()
 
 	if client != nil {
