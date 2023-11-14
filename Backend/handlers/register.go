@@ -46,7 +46,7 @@ func RegisterHandler(c *gin.Context, collection *mongo.Collection) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not insert user"})
 		return
 	}
-	baseURL := "http://localhost:3000/verify/"
+	baseURL := "http://localhost:8080/verify/"
 	userToken := user.Token
 
 	fullURL := baseURL + userToken

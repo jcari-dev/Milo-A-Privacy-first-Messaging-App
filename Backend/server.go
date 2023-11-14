@@ -75,6 +75,8 @@ func main() {
 	r.POST("/register", func(c *gin.Context) {
 		handlers.RegisterHandler(c, collection)
 	})
+
+	// Login route
 	r.POST("/authenticate", func(c *gin.Context) {
 		handlers.AuthenticateHandler(c, collection)
 	})
@@ -83,11 +85,11 @@ func main() {
 		handlers.VerifyHandler(c, collection)
 
 	})
+	// Currently using reCaptcha in this route, that needs to be reworked.
+	// r.POST("/verify", func(c *gin.Context) {
+	// 	handlers.Verify(c)
 
-	r.POST("/verify", func(c *gin.Context) {
-		handlers.Verify(c)
-
-	})
+	// })
 	r.POST("/validate", func(c *gin.Context) {
 		handlers.Validate(c)
 

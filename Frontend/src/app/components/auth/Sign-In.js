@@ -3,17 +3,25 @@
 import { useState, useRef } from 'react';
 import React from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 import {
   Card, Input, FormControl,
   FormLabel,
   FormErrorMessage,
   Button,
   InputGroup,
-  Link,
-  FormHelperText,
-  VStack,
   InputRightElement,
-  Image, Box, Text, Container, Heading, Divider
+  Image, Box, Text, Divider,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Switch,
+  Flex
 } from '@chakra-ui/react'
 
 import Head from 'next/head';
@@ -22,17 +30,34 @@ import { Field, Form, Formik, useFormikContext } from 'formik';
 
 
 const SignUpForm = () => {
+  const router = useRouter();
   const passwordRef = useRef(null);
   const [formData, setFormData] = useState({ username: '', password: '' });
 
+  function generateSessionURL() {
+    const data = "123"
+    return data
+  }
+
+  const handleGenerateSession = () => {
+    const sessionURL = generateSessionURL();
+
+    router.push(`/session/${sessionURL}`)
+  }
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const [showP1, setShowP1] = React.useState(false)
+  const { isOpen, onOpen, onClose: baseOnClose } = useDisclosure();
+  const [isExpireChecked, setIsExpireChecked] = useState(false);
 
   const handleClickP1 = () => setShowP1(!showP1)
+  const onClose = () => {
+    setIsExpireChecked(false);
+    baseOnClose();
+  };
 
   async function validateUsername(value) {
 
@@ -196,10 +221,41 @@ const SignUpForm = () => {
             ✨ Introducing... ✨<br />
             Instant Chat Rooms: No Sign-Up Required, Just Share a Link & Chat Away!
           </Text>
-          <Button colorScheme="orange">
+          <Button colorScheme="orange" onClick={onOpen}>
             Try Now!
           </Button>
         </Box>
+        {/* Modal */}
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              Create a Chat Session
+            </ModalHeader>
+            <ModalCloseButton color="cyan.800" />
+            <ModalBody>
+              <FormControl display="flex" alignItems="center">
+                <FormLabel htmlFor="expire-switch" mb="0">
+                  Expire:
+                </FormLabel>
+                <Switch id="expire-switch" onChange={() => setIsExpireChecked(!isExpireChecked)} />
+              </FormControl>
+              {isExpireChecked && (
+                <FormControl mt={4}>
+                  <FormLabel htmlFor="expire-date"> Expiration Date:</FormLabel>
+                  <Input type="date" id="expire-date" />
+                </FormControl>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Flex width="full" justifyContent="center">
+                <Button colorScheme="orange" onClick={handleGenerateSession}>
+                  Generate Session!
+                </Button>
+              </Flex>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Card>
 
     </div>)

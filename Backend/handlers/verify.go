@@ -35,7 +35,7 @@ func VerifyHandler(c *gin.Context, collection *mongo.Collection) {
 
 	tokenTimestamp := tokenDateTime.Time()
 
-	if time.Since(tokenTimestamp).Minutes() > 15 {
+	if time.Since(tokenTimestamp).Minutes() > 4040 {
 
 		_, err = collection.DeleteOne(context.TODO(), filter)
 		if err != nil {
