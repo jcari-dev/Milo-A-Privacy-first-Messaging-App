@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"milo/handlers"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -90,6 +92,12 @@ func main() {
 	// 	handlers.Verify(c)
 
 	// })
+
+	r.POST("/session", func(c *gin.Context) {
+		fmt.Println(os.Getwd())
+		handlers.GenerateSessionURL()
+	})
+
 	r.POST("/validate", func(c *gin.Context) {
 		handlers.Validate(c)
 

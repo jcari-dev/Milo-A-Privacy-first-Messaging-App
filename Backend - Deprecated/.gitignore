@@ -1,0 +1,16 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+
+# Logs
+*.log
+
+# Windows specific files
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Environment files
+.env
