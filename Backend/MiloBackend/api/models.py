@@ -10,3 +10,8 @@ class ExtendedUser(AbstractUser):
     # Override the is_active field
     # It will only be true, when the user verifies their email address.
     is_active = models.BooleanField(default=False)
+
+
+class Session(models.Model):
+    session_url = models.CharField(max_length=150)
+    expiration_date = models.DateField(null=True)

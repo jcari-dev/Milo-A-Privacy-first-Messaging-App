@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import ExtendedUser
+from django.core.validators import validate_email as django_validate_email
 import re
 from django.contrib.auth.hashers import make_password
 
@@ -40,9 +41,18 @@ def validate_password(password):
     if not re.findall('[!@#$%^&*()-_+=<>?]', password):
         raise serializers.ValidationError(
             "Password must contain at least one special character.")
+    if len(password) > 35:
+        raise serializers.ValidationError(
+            "Password must not exceed 35 characters long.")
 
 
 def validate_email(email):
+
+    try:
+        django_validate_email(email)
+    except serializers.ValidationError:
+        raise serializers.ValidationError("Enter a valid email address.")
+
     if ExtendedUser.objects.filter(email=email).exists():
         raise serializers.ValidationError(
             "Email is already taken."
@@ -50,16 +60,17 @@ def validate_email(email):
 
 
 def validate_username(username):
+
     username = username.lower()
     username_length = len(username)
 
     if username_length < 3:
-        if username_length > 15:
-            raise serializers.ValidationError(
-                "Username must not be longer than 15 characters."
-            )
         raise serializers.ValidationError(
             "Username must be at least 3 characters long."
+        )
+    if username_length > 15:
+        raise serializers.ValidationError(
+            "Username must not be longer than 15 characters."
         )
     if ExtendedUser.objects.filter(username=username).exists():
         raise serializers.ValidationError(
@@ -84,6 +95,7 @@ class RegistrationFormData(serializers.Serializer):
 
     def validate_password(self, value):
         # Only validate if the password is provided in the request
+        print(value, "@@@@@@")
         if value:
             validate_password(value)
         return value
@@ -92,6 +104,12 @@ class RegistrationFormData(serializers.Serializer):
         # Only validate if the username is provided in the request
         if value:
             validate_username(value)
+        return value
+
+    def validate_email(self, value):
+        # Only validate if the username is provided in the request
+        if value:
+            validate_email(value)
         return value
 
     def validate(self, data):

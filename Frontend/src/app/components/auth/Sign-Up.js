@@ -44,21 +44,19 @@ const SignUpForm = () => {
         } else if (value.length >= 6) {
             let error
 
-            const response = await fetch("http://localhost:8080/validate", {
+            const response = await fetch("http://127.0.0.1:8000/api/validate-registration-form/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ field: 'email', value: value }),
+                body: JSON.stringify({ 'email': value }),
             });
 
             const data = await response.json();
 
-            if (data.error) {
-                error = data.error
+            if (response.status === 400) {
+                return data.email
             }
-
-            return error
         }
 
     }
@@ -77,21 +75,19 @@ const SignUpForm = () => {
             }
             let error
 
-            const response = await fetch("http://localhost:8080/validate", {
+            const response = await fetch("http://127.0.0.1:8000/api/validate-registration-form/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ field: 'username', value: value }),
+                body: JSON.stringify({ 'username': value }),
             });
 
             const data = await response.json();
 
-            if (data.error) {
-                error = data.error
+            if (response.status === 400) {
+                return data.username
             }
-
-            return error
         }
 
     }
@@ -107,18 +103,18 @@ const SignUpForm = () => {
             return error
         } else {
 
-            const response = await fetch("http://localhost:8080/validate", {
+            const response = await fetch("http://127.0.0.1:8000/api/validate-registration-form/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ field: 'password', value: value }),
+                body: JSON.stringify({ 'password': value }),
             });
 
             const data = await response.json();
 
-            if (data.error) {
-                error = data.error
+            if (response.status === 400) {
+                return data.password
             } else {
                 const password2 = password2Ref.current.value;
                 if (password2 && password2 !== value) {
@@ -143,18 +139,18 @@ const SignUpForm = () => {
             return error
         } else if (value.length >= 8) {
 
-            const response = await fetch("http://localhost:8080/validate", {
+            const response = await fetch("http://127.0.0.1:8000/api/validate-registration-form/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ field: 'password', value: value }),
+                body: JSON.stringify({ 'password': value }),
             });
 
             const data = await response.json();
 
-            if (data.error) {
-                error = data.error
+            if (response.status === 400) {
+                return data.password
             } else {
                 const password1 = password1Ref.current.value;
                 if (password1 && password1 !== value) {
@@ -173,7 +169,7 @@ const SignUpForm = () => {
         console.log(formData)
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/register', formData);
+            const response = await axios.post('http://127.0.0.1:8000/api/register/', formData);
             console.log('User registered:', response.data);
         } catch (error) {
             console.error('Registration failed:', error);
@@ -230,8 +226,13 @@ const SignUpForm = () => {
                         validateOnBlur={true}
                         validateOnChange={false}
                         onSubmit={async (values, actions) => {
+                            console.log(values)
+                            if (values.password1 != values.password2) {
+
+                            }
+                            console.log(values.password1)
                             try {
-                                const response = await axios.post('http://localhost:8080/register', values);
+                                const response = await axios.post('http://127.0.0.1:8000/api/register/', values);
                                 console.log('User registered:', response.data);
                                 setRegistration(true)
                             } catch (error) {
@@ -240,7 +241,7 @@ const SignUpForm = () => {
                             actions.setSubmitting(false);
                         }}
                     >
-                        {(props) => (
+                        {({ isValid, isSubmitting, ...props }) => (
                             <Form>
                                 <Field name='email' validate={validateEmail}>
                                     {({ field, form }) => (
@@ -316,12 +317,16 @@ const SignUpForm = () => {
                                         </FormControl>
                                     )}
                                 </Field>
+                                {!isValid && (
+                                    <p style={{ color: 'red' }}>Please fill out all fields correctly.</p>
+                                )}
                                 <Button
                                     mt={2}
                                     mb={4}
                                     colorScheme='orange'
-                                    isLoading={props.isSubmitting}
+                                    isLoading={isSubmitting}
                                     type='submit'
+                                    isDisabled={!isValid}
                                 >
                                     Sign Up
                                 </Button>

@@ -15,10 +15,12 @@ class ExtendedUserRegistration(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        print(request)
         serializer = ExtendedUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             return Response(serializer.data, status=201)
+        print(serializer.errors)
         return Response(serializer.errors, status=400)
 
 

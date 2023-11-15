@@ -73,7 +73,7 @@ const SignUpForm = () => {
       }
       let error
 
-      const response = await fetch("http://localhost:8080/validate", {
+      const response = await fetch("http://127.0.0.1:8000/validate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,13 +81,12 @@ const SignUpForm = () => {
         body: JSON.stringify({ field: 'username', value: value }),
       });
 
+
       const data = await response.json();
 
-      if (data.error) {
-        error = data.error
+      if (response.status === 400) {
+        return data
       }
-
-      return error
     }
 
   }
@@ -103,7 +102,7 @@ const SignUpForm = () => {
       return error
     } else {
 
-      const response = await fetch("http://localhost:8080/validate", {
+      const response = await fetch("http://127.0.0.1:8000/validate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -112,6 +111,10 @@ const SignUpForm = () => {
       });
 
       const data = await response.json();
+
+      if (response.status === 400) {
+        return data
+      }
 
     }
 
@@ -125,7 +128,7 @@ const SignUpForm = () => {
     console.log(formData)
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8080/register', formData);
+      const response = await axios.post('http://127.0.0.1:8000/register', formData);
       console.log('User registered:', response.data);
     } catch (error) {
       console.error('Registration failed:', error);
@@ -158,7 +161,7 @@ const SignUpForm = () => {
           initialValues={{ username: '', password: '' }}
           onSubmit={async (values, actions) => {
             try {
-              const response = await axios.post('http://localhost:8080/register', values);
+              const response = await axios.post('http://127.0.0.1:8000/register', values);
               console.log('User registered:', response.data);
             } catch (error) {
               console.error('Registration failed:', error);
