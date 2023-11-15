@@ -1,2 +1,5 @@
 # VS Code
 .vscode/
+
+# .gitignore
+Backend/MiloBackend/.env
