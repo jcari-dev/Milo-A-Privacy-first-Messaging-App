@@ -29,13 +29,14 @@ The decision is not final yet.
 
 ## Sign-In Page
 
-![image](https://github.com/jcari-dev/Milo-A-Privacy-first-Messaging-App/assets/65676916/027bf943-ec47-4007-a673-edb80c15de22)
+![sign-in](https://github.com/jcari-dev/Milo-A-Privacy-first-Messaging-App/assets/65676916/ad99a600-f58c-483f-bd90-bba6561b0a44)
 
 
 
 ## Sign-Up Page
 
-![image](https://github.com/jcari-dev/Milo-A-Privacy-first-Messaging-App/assets/65676916/b2db88ad-b050-4070-8f2a-be21889edd76)
+
+![sign-up](https://github.com/jcari-dev/Milo-A-Privacy-first-Messaging-App/assets/65676916/57cf52dd-9121-4708-bce9-98b0439af264)
 
 
 ## Usage
